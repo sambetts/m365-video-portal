@@ -1,0 +1,8 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/src/Teams/video-portal-app/.vs
+*.userdata
+/src/Teams/video-portal-app/.fx/states/state.local.json
+/src/Teams/video-portal-app/tabs/.env.teamsfx.local
