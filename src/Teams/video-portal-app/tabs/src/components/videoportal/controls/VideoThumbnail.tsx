@@ -1,11 +1,11 @@
 import { VideoInfo } from "../../../models/VideoInfo";
 
-export function VideoThumbnail(props: {info : VideoInfo}) {
+export function VideoThumbnail(props: {info : VideoInfo, onclick: Function}) {
 
   return (
-    <a onClick={()=> alert('Sup')}>
-      <img src={props.info.thumbnail}/>
-    </a>
+    <span onClick={()=> props.onclick(props.info)}>
+      <img src={props.info.thumbnail} style={{maxHeight: 200, marginRight: 5}}/>
+    </span>
   );
 }
 

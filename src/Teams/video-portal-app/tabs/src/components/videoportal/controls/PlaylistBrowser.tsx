@@ -7,7 +7,7 @@ import { IGraphResponse } from "../../../models/GraphResponse";
 import { VideoInfo } from "../../../models/VideoInfo";
 import { VideoThumbnail } from "./VideoThumbnail";
 
-export function PlaylistBrowser(props: { listTitle: string, siteId: string, graphClient: Client }) {
+export function PlaylistBrowser(props: { listTitle: string, siteId: string, graphClient: Client, onVideoClick: Function}) {
 
   const [videos, setVideos] = useState<VideoInfo[] | null>(null);
 
@@ -27,6 +27,7 @@ export function PlaylistBrowser(props: { listTitle: string, siteId: string, grap
   });
   return (
     <div>
+      <h3>{props.listTitle}</h3>
       {error &&
         <div>{JSON.stringify(error)}</div>
       }
@@ -35,7 +36,7 @@ export function PlaylistBrowser(props: { listTitle: string, siteId: string, grap
         :
         <>
           {videos.map(v => {
-            return <VideoThumbnail info={v} />
+            return <VideoThumbnail key={v.uniqueId} info={v} onclick={(v : VideoInfo) => props.onVideoClick(v)} />
           })}
         </>
       }

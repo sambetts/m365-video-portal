@@ -25,6 +25,8 @@ export function getSPItemFieldValue(fields: FieldValueSet | null, propName: stri
 // Get https://contoso.sharepoint.com
 export function getSiteUrl(url: string): string | null {
     url = url.toLowerCase();
+
+    // Look for personal & sites scopes
     const SCOPE_PERSONAL = "/personal/";
     const SCOPE_SITES = "/sites/";
     let spScopeLen = SCOPE_PERSONAL.length;
@@ -40,6 +42,14 @@ export function getSiteUrl(url: string): string | null {
         const nextSlash = url.indexOf("/", siteFragmentStart);
         if (nextSlash > -1) {
             return url.substring(0, nextSlash);
+        }
+    }
+    else
+    {
+        const SP_DOMAIN = "sharepoint.com";
+        const spDomainLoc = url.indexOf(SP_DOMAIN);
+        if (spDomainLoc > -1) {
+            return url.substring(0, spDomainLoc + SP_DOMAIN.length);
         }
     }
 

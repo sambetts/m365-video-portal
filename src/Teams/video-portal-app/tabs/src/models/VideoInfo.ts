@@ -1,7 +1,7 @@
 import { ListItem } from "@microsoft/microsoft-graph-types";
 import { AbstractVideoLoader } from "../loaders/VideoLoaders";
 import { getSiteUrl, getSPItemFieldValue } from "../utils/sputils";
-import { PlayListItemInfo } from "./SPItemInfo";
+import { PlaylistVideoItemInfo } from "./SPItemInfo";
 import { ThumbnailUrlGraphInfo } from "./ThumbnailUrlGraphInfo";
 
 export class VideoInfo {
@@ -11,7 +11,7 @@ export class VideoInfo {
     thumbnail: string;
 
     // Construct from either SPItemInfo or base params
-    constructor(videoListItemInfo: PlayListItemInfo | undefined, uniqueId: string | undefined, siteUrl: string | undefined, thumbnail: string | undefined) {
+    constructor(videoListItemInfo: PlaylistVideoItemInfo | undefined, uniqueId: string | undefined, siteUrl: string | undefined, thumbnail: string | undefined) {
         if (videoListItemInfo) {
             this.uniqueId = videoListItemInfo.etag.id;
             this.thumbnail = videoListItemInfo.thumbnail;
@@ -57,7 +57,7 @@ export class VideoInfo {
 
     public static FromVideoSPListItem(spListItem: ListItem, thumbnail: string): Promise<VideoInfo> {
 
-        const inf = new PlayListItemInfo(spListItem, thumbnail);
+        const inf = new PlaylistVideoItemInfo(spListItem, thumbnail);
         if (inf) {
             return Promise.resolve(new VideoInfo(inf, undefined, undefined, undefined));
         }
