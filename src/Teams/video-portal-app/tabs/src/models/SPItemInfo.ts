@@ -2,17 +2,12 @@ import { ListItem } from "@microsoft/microsoft-graph-types";
 import { getSPItemFieldValue } from "../utils/sputils";
 import { EtagInfo } from "./EtagInfo";
 
+export class BaseSPItemInfo {
 
-export class SPItemInfo {
     etag: EtagInfo;
     webUrl: string;
-    constructor(webUrl: string, etag: EtagInfo) {
-        this.etag = etag;
-        this.webUrl = webUrl;
-    }
 
-    // Example: "864390a1-3de9-4d33-8996-5e086822d712,2"
-    public static FromListItem(li: ListItem): SPItemInfo | null {
+    constructor(li: ListItem) {
         if (li && li.fields) {
 
             // Do we have an eTag field to grab the UID from? 
@@ -22,12 +17,43 @@ export class SPItemInfo {
                 e = EtagInfo.FromEtag(eTagFieldVal);
             }
 
-            // Do we have an eTag field to grab the UID from? 
             if (li.webUrl && e) {
-                return new SPItemInfo(li.webUrl, e);
+                this.etag = e;
+                this.webUrl = li.webUrl;
+                return;
             }
         }
+        throw new Error("Invalid base ListItem");
+    }
+}
 
-        return null;
+export class PlayListItemInfo extends BaseSPItemInfo {
+
+    thumbnail: string;
+
+    constructor(li: ListItem, thumbnail: string) {
+        super(li);
+        this.thumbnail = thumbnail;
+    }
+}
+
+export class PlayListsItemSPItemInfo extends BaseSPItemInfo {
+
+    siteId : string | null;
+    playListTitle: string;
+
+    constructor(li: ListItem) {
+        super(li)
+        if (li.fields) {
+
+            this.siteId = getSPItemFieldValue(li.fields, "SiteId");
+            const playListTitleVal: string | null = getSPItemFieldValue(li.fields, "Title");
+
+            if (playListTitleVal) {
+                this.playListTitle = playListTitleVal;
+                return;
+            }
+        }
+        throw new Error("Invalid PlayListsItemSPItemInfo ListItem");
     }
 }

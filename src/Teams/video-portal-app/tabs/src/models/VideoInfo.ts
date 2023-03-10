@@ -1,20 +1,22 @@
 import { ListItem } from "@microsoft/microsoft-graph-types";
 import { AbstractVideoLoader } from "../loaders/VideoLoaders";
 import { getSiteUrl, getSPItemFieldValue } from "../utils/sputils";
-import { SPItemInfo } from "./SPItemInfo";
+import { PlayListItemInfo } from "./SPItemInfo";
 import { ThumbnailUrlGraphInfo } from "./ThumbnailUrlGraphInfo";
 
 export class VideoInfo {
 
     uniqueId: string;
     siteUrl: string;
+    thumbnail: string;
 
     // Construct from either SPItemInfo or base params
-    constructor(i: SPItemInfo | undefined, uniqueId: string | undefined, siteUrl: string | undefined) {
-        if (i) {
-            this.uniqueId = i.etag.id;
+    constructor(videoListItemInfo: PlayListItemInfo | undefined, uniqueId: string | undefined, siteUrl: string | undefined, thumbnail: string | undefined) {
+        if (videoListItemInfo) {
+            this.uniqueId = videoListItemInfo.etag.id;
+            this.thumbnail = videoListItemInfo.thumbnail;
 
-            const u = getSiteUrl(i.webUrl);
+            const u = getSiteUrl(videoListItemInfo.webUrl);
             if (u) {
                 this.siteUrl = u;
             }
@@ -22,10 +24,11 @@ export class VideoInfo {
                 throw new Error("Invalid video info");
         }
         else {
-            if (siteUrl && uniqueId) {
+            if (siteUrl && uniqueId && thumbnail) {
 
                 this.uniqueId = uniqueId;
                 this.siteUrl = siteUrl;
+                this.thumbnail = thumbnail;
             }
             else
                 throw new Error("Invalid video info");
@@ -52,11 +55,11 @@ export class VideoInfo {
         return Promise.reject("Invalid playlist ListItem");
     }
 
-    public static FromVideoSPListItem(spListItem: ListItem): Promise<VideoInfo> {
+    public static FromVideoSPListItem(spListItem: ListItem, thumbnail: string): Promise<VideoInfo> {
 
-        const inf = SPItemInfo.FromListItem(spListItem);
+        const inf = new PlayListItemInfo(spListItem, thumbnail);
         if (inf) {
-            return Promise.resolve(new VideoInfo(inf, undefined, undefined));
+            return Promise.resolve(new VideoInfo(inf, undefined, undefined, undefined));
         }
         return Promise.reject("Invalid video ListItem");
     }

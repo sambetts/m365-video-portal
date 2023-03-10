@@ -2,16 +2,16 @@
 import { TeamsUserCredential, UserInfo } from "@microsoft/teamsfx";
 import { useState } from "react";
 import { UserLoggedIn } from "./UserLoggedIn";
-import { Button } from "@fluentui/react-northstar";
 import { Client } from "@microsoft/microsoft-graph-client";
 import { useData } from "@microsoft/teamsfx-react";
-import { GraphVideoLoader, loadVideosFromPlayListSPListItems } from "../../loaders/VideoLoaders";
-import { VideoInfo } from "../../models/VideoInfo";
-import { VideoIframe } from "./VideoIframe";
+import { List, ListItem } from "@microsoft/microsoft-graph-types";
+import { IGraphResponse } from "../../models/GraphResponse";
+import { PlayListItemInfo, PlayListsItemSPItemInfo } from "../../models/SPItemInfo";
 
 export function PortalPageContents(props: { teamsUserCredential: TeamsUserCredential, graphClient: Client }) {
 
-  const [videos, setVideos] = useState<VideoInfo[] | null>(null);
+  const PLAYLISTS_LISTTITLE = "PlayLists";
+  const [listItems, setListItems] = useState<ListItem[] | null>(null);
 
   // Test a Graph call
   const { loading, data, error } = useData(async () => {
@@ -19,10 +19,14 @@ export function PortalPageContents(props: { teamsUserCredential: TeamsUserCreden
 
       // Test client
       const siteId = process.env.REACT_APP_SPSITE_ID;
-      const listItems = await props.graphClient.api(`/sites/${siteId}/lists/Playlist/items?expand=fields`).get();
+      const playlistResults: IGraphResponse<ListItem> = await props.graphClient.api(`/sites/${siteId}/lists/${PLAYLISTS_LISTTITLE}/items?$expand=fields`).get();
 
-      const videos = await loadVideosFromPlayListSPListItems(listItems.value, new GraphVideoLoader(props.graphClient));
-      setVideos(videos);
+      const playLists : PlayListsItemSPItemInfo[] = [];
+      playlistResults.value.forEach(i=> 
+        {
+          playLists.push(new PlayListsItemSPItemInfo(i));
+        });
+      setListItems(playlistResults.value);
 
     } catch (err: unknown) {
       console.error(err);
@@ -34,15 +38,17 @@ export function PortalPageContents(props: { teamsUserCredential: TeamsUserCreden
     <div>
       <>
         <UserLoggedIn graphClient={props.graphClient} />
-        <p>Videos from a playlist:</p>
-        {videos ?
+        {listItems ?
           <>
-            {videos.length === 0 ?
-              <p>No videos found</p>
+            {listItems.length === 0 ?
+              <p>No videos playlists found</p>
               :
               <>
-                {videos.map(v => {
-                  return <VideoIframe siteRootUrl={v.siteUrl} title="Whatevs" videoUniqueId={v.uniqueId} key={v.uniqueId} />
+                {listItems.map(l => {
+                  return <>
+                    <p key={l.id}>{l.name}</p>
+
+                  </>
                 })}
               </>
             }

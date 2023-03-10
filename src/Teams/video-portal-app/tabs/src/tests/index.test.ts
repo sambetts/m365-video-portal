@@ -7,7 +7,7 @@ import { ThumbnailUrlGraphInfo } from "../models/ThumbnailUrlGraphInfo";
 class TestAbstractVideoLoader extends AbstractVideoLoader
 {
   LoadVideoInfo(info: ThumbnailUrlGraphInfo): Promise<VideoInfo> {
-    const testVid = new VideoInfo(undefined, "Test ID", "https://whatevr");
+    const testVid = new VideoInfo(undefined, "Test ID", "https://whatevr", "https://whatevr/thumbnail");
     return Promise.resolve(testVid);
   }
 }

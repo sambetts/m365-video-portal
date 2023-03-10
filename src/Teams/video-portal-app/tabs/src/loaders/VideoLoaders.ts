@@ -18,7 +18,7 @@ export class GraphVideoLoader extends AbstractVideoLoader {
 
     LoadVideoInfo(videoItemInfo: ThumbnailUrlGraphInfo): Promise<VideoInfo> {
         return this.graphClient.api(videoItemInfo.listItemGraphUrlRelative).get()
-            .then(li => VideoInfo.FromVideoSPListItem(li));
+            .then(li => VideoInfo.FromVideoSPListItem(li, videoItemInfo.thumbnailUrl));
     }
 }
 
