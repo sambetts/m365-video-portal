@@ -1,5 +1,6 @@
-import { AbstractVideoLoader } from "../loaders/VideoLoaders";
+import { getGraphItemUrlFromSpoApiUrl } from "../utils/sputils";
 
+// Info gotten from a playlist item thumbnail field
 export class ThumbnailUrlGraphInfo {
 
     listItemGraphUrl: string;
@@ -17,7 +18,7 @@ export class ThumbnailUrlGraphInfo {
             return null;
         }
 
-        const gUrl = this.getGraphItemUrl(url);
+        const gUrl = getGraphItemUrlFromSpoApiUrl(url);
         if (gUrl && gUrl.length > 0) {
             return new ThumbnailUrlGraphInfo(gUrl, url);
         }
@@ -25,26 +26,4 @@ export class ThumbnailUrlGraphInfo {
         return null;
     }
 
-    // Get https://contoso.sharepoint.com/_api/v2.0/drives/b!4ssZhlJsDkqydQo9Adc0xDpzNsyFwftAolttlcBPBajqHKl8guEiRYQnzjHqxsp3/items/01UVLXBBVBSBBYN2J5GNGYTFS6BBUCFVYS
-    static getGraphItemUrl(url: string): string | null {
-        if (url && url.length > 0) {
-
-            const urlParsed = (new URL(url));
-            const urlLower = url.toLowerCase();
-            const ITEMS = "/items/";
-            const itemsLoc = urlLower.indexOf(ITEMS);
-            if (itemsLoc > -1) {
-                const nextSlashStart = itemsLoc + ITEMS.length;
-
-                const nextSlashLoc = urlLower.indexOf("/", nextSlashStart);
-                if (nextSlashLoc > -1) {
-                    const itemsSpUrl = url.substring(0, nextSlashLoc) + "/listItem";
-
-                    return itemsSpUrl.replace(urlParsed.hostname + "/_api/v2.0", "graph.microsoft.com/v1.0");
-                }
-            }
-        }
-
-        return null;
-    }
 }

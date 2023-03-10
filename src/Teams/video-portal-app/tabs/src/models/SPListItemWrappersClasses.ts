@@ -1,7 +1,8 @@
 import { ListItem } from "@microsoft/microsoft-graph-types";
-import { getSPItemFieldValue } from "../utils/sputils";
+import { getSiteUrl, getSPItemFieldValue } from "../utils/sputils";
 import { EtagInfo } from "./EtagInfo";
 
+// Common item 
 export class BaseSPItemInfo {
 
     id: string;
@@ -33,10 +34,18 @@ export class BaseSPItemInfo {
 export class PlaylistVideoItemInfo extends BaseSPItemInfo {
 
     thumbnail: string;
+    rootSiteUrl: string;
 
-    constructor(li: ListItem, thumbnail: string) {
+    constructor(li: ListItem, thumbnail: string | null) {
         super(li);
-        this.thumbnail = thumbnail;
+
+        const siteUrl = getSiteUrl(this.webUrl);
+        if (thumbnail && siteUrl) {
+            this.rootSiteUrl = siteUrl;
+            this.thumbnail = thumbnail;
+        }
+        else
+            throw new Error("Invalid PlaylistVideoItemInfo");
     }
 }
 

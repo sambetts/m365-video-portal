@@ -4,14 +4,14 @@ import { useData } from "@microsoft/teamsfx-react";
 import { useState } from "react";
 import { loadVideosFromPlayListSPListItems, GraphVideoLoader } from "../../../loaders/VideoLoaders";
 import { IGraphResponse } from "../../../models/GraphResponse";
-import { VideoInfo } from "../../../models/VideoInfo";
+import { PlaylistVideoItemInfo } from "../../../models/SPListItemWrappersClasses";
 import { VideoThumbnail } from "./VideoThumbnail";
 
 export function PlaylistBrowser(props: { listTitle: string, siteId: string, graphClient: Client, onVideoClick: Function}) {
 
-  const [videos, setVideos] = useState<VideoInfo[] | null>(null);
+  const [videos, setVideos] = useState<PlaylistVideoItemInfo[] | null>(null);
 
-  const { loading, data, error } = useData(async () => {
+  const { error } = useData(async () => {
     try {
 
       const listItems : IGraphResponse<ListItem> = await props.graphClient.api(`/sites/${props.siteId}/lists/${props.listTitle}/items?$expand=fields`).get();
@@ -36,7 +36,7 @@ export function PlaylistBrowser(props: { listTitle: string, siteId: string, grap
         :
         <>
           {videos.map(v => {
-            return <VideoThumbnail key={v.uniqueId} info={v} onclick={(v : VideoInfo) => props.onVideoClick(v)} />
+            return <VideoThumbnail key={v.etag.id} info={v} onclick={(v : PlaylistVideoItemInfo) => props.onVideoClick(v)} />
           })}
         </>
       }

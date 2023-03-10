@@ -1,14 +1,13 @@
 
-import { TeamsUserCredential, UserInfo } from "@microsoft/teamsfx";
+import { TeamsUserCredential } from "@microsoft/teamsfx";
 import { useState } from "react";
 import { UserLoggedIn } from "./UserLoggedIn";
 import { Client } from "@microsoft/microsoft-graph-client";
 import { useData } from "@microsoft/teamsfx-react";
 import { ListItem } from "@microsoft/microsoft-graph-types";
 import { IGraphResponse } from "../../models/GraphResponse";
-import { PlaylistInfoSPItemInfo } from "../../models/SPItemInfo";
+import { PlaylistInfoSPItemInfo, PlaylistVideoItemInfo } from "../../models/SPListItemWrappersClasses";
 import { PlaylistBrowser } from "./controls/PlaylistBrowser";
-import { VideoInfo } from "../../models/VideoInfo";
 import { VideoIframe } from "./controls/VideoIframe";
 import { Button } from "@fluentui/react-northstar";
 
@@ -16,9 +15,9 @@ export function PortalPageContents(props: { teamsUserCredential: TeamsUserCreden
 
   const PLAYLISTS_LISTTITLE = "PlayLists";
   const [listItems, setListItems] = useState<PlaylistInfoSPItemInfo[] | null>(null);
-  const [selectedVideo, setSelectedVideo] = useState<VideoInfo | null>(null);
+  const [selectedVideo, setSelectedVideo] = useState<PlaylistVideoItemInfo | null>(null);
 
-  const { loading, data, error } = useData(async () => {
+  useData(async () => {
     try {
 
       // Get playlists from a list of what there is & what's published
@@ -45,7 +44,7 @@ export function PortalPageContents(props: { teamsUserCredential: TeamsUserCreden
         <UserLoggedIn graphClient={props.graphClient} />
         {selectedVideo &&
           <div>
-            <VideoIframe siteRootUrl={selectedVideo.siteUrl} title="{selectedVideo}" videoUniqueId={selectedVideo.uniqueId} autoPlay={true} />
+            <VideoIframe siteRootUrl={selectedVideo.rootSiteUrl} title="{selectedVideo}" videoUniqueId={selectedVideo.etag.id} autoPlay={true} />
             <div>
               <Button content="Close" onClick={() => setSelectedVideo(null)} />
             </div>
@@ -60,13 +59,12 @@ export function PortalPageContents(props: { teamsUserCredential: TeamsUserCreden
                 {listItems.map(l => {
                   return <>
                     <PlaylistBrowser graphClient={props.graphClient} listTitle={l.playListTitle}
-                      siteId={process.env.REACT_APP_SPSITE_ID!} onVideoClick={(v: VideoInfo) => setSelectedVideo(v)} />
+                      siteId={process.env.REACT_APP_SPSITE_ID!} onVideoClick={(v: PlaylistVideoItemInfo) => setSelectedVideo(v)} />
 
                   </>
                 })}
               </>
             }
-
           </>
           :
           <p>Loading...</p>

@@ -1,13 +1,21 @@
 import { FieldValueSet, ListItem } from "@microsoft/microsoft-graph-types";
 import { AbstractVideoLoader, loadVideosFromPlayListSPListItems } from "../loaders/VideoLoaders";
 import { EtagInfo } from "../models/EtagInfo";
-import { VideoInfo } from "../models/VideoInfo";
+import { PlaylistVideoItemInfo } from "../models/SPListItemWrappersClasses";
 import { ThumbnailUrlGraphInfo } from "../models/ThumbnailUrlGraphInfo";
 
 class TestAbstractVideoLoader extends AbstractVideoLoader
 {
-  LoadVideoInfo(info: ThumbnailUrlGraphInfo): Promise<VideoInfo> {
-    const testVid = new VideoInfo(undefined, "Test ID", "https://whatevr", "https://whatevr/thumbnail");
+  LoadVideoInfo(info: ThumbnailUrlGraphInfo): Promise<PlaylistVideoItemInfo> {
+    
+    const fields : TestFieldValueSet = 
+    {
+      id:"1",
+      Title: "",
+      "fields@odata.context": "asdfasdfa"
+    }
+    const spListItem : ListItem = { id: "1", fields: fields };
+    const testVid = new PlaylistVideoItemInfo(spListItem, "https://whatevr/thumbnail");
     return Promise.resolve(testVid);
   }
 }
@@ -56,6 +64,6 @@ describe('Model tests', () => {
 export interface TestFieldValueSet extends FieldValueSet
 {    
   [key: string|number]: string | undefined,
-  Thumbnail: string,
+  Thumbnail?: string,
   Title: string
 }
