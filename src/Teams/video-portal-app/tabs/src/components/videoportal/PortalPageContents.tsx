@@ -1,7 +1,6 @@
 
 import { TeamsUserCredential } from "@microsoft/teamsfx";
 import { useState } from "react";
-import { UserLoggedIn } from "./UserLoggedIn";
 import { Client } from "@microsoft/microsoft-graph-client";
 import { useData } from "@microsoft/teamsfx-react";
 import { ListItem } from "@microsoft/microsoft-graph-types";
@@ -39,37 +38,33 @@ export function PortalPageContents(props: { teamsUserCredential: TeamsUserCreden
     return;
   });
   return (
-    <div>
-      <>
-        <UserLoggedIn graphClient={props.graphClient} />
-        {selectedVideo &&
+    <div style={{marginLeft: 40}}>
+      {selectedVideo &&
+        <div>
+          <VideoIframe siteRootUrl={selectedVideo.rootSiteUrl} title="{selectedVideo}" videoUniqueId={selectedVideo.etag.id} autoPlay={true} />
           <div>
-            <VideoIframe siteRootUrl={selectedVideo.rootSiteUrl} title="{selectedVideo}" videoUniqueId={selectedVideo.etag.id} autoPlay={true} />
-            <div>
-              <Button content="Close" onClick={() => setSelectedVideo(null)} />
-            </div>
+            <Button content="Close" onClick={() => setSelectedVideo(null)} />
           </div>
-        }
-        {listItems ?
-          <>
-            {listItems.length === 0 ?
-              <p>No videos playlists found</p>
-              :
-              <>
-                {listItems.map(l => {
-                  return <>
-                    <PlaylistBrowser graphClient={props.graphClient} listTitle={l.playListTitle}
-                      siteId={process.env.REACT_APP_SPSITE_ID!} onVideoClick={(v: PlaylistVideoItemInfo) => setSelectedVideo(v)} />
-
-                  </>
-                })}
-              </>
-            }
-          </>
-          :
-          <p>Loading...</p>
-        }
-      </>
+        </div>
+      }
+      {listItems ?
+        <>
+          {listItems.length === 0 ?
+            <p>No videos playlists found</p>
+            :
+            <>
+              {listItems.map(l => {
+                return <>
+                  <PlaylistBrowser graphClient={props.graphClient} listTitle={l.playListTitle} key={l.id}
+                    siteId={process.env.REACT_APP_SPSITE_ID!} onVideoClick={(v: PlaylistVideoItemInfo) => setSelectedVideo(v)} />
+                </>
+              })}
+            </>
+          }
+        </>
+        :
+        <p>Loading...</p>
+      }
     </div >
   );
 }
